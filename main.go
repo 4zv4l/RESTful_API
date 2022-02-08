@@ -28,6 +28,7 @@ func createNewLanguage(w http.ResponseWriter, r *http.Request) {
 	var language Language
 	err := json.Unmarshal(reqBody, &language)
 	if err != nil { // cannot create a new Language
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Println(err)
 		return
 	}
@@ -43,9 +44,14 @@ func getLanguage(w http.ResponseWriter, r *http.Request) {
 	for _, language := range Languages {
 		if language.Id == key {
 			fmt.Println("getLanguage: " + key)
+			fmt.Println("given id : "+key, "found id : "+language.Id)
 			json.NewEncoder(w).Encode(language)
+			return
 		}
 	}
+	// bad ID
+	fmt.Println("BAD : getLanguage: " + key)
+	w.WriteHeader(http.StatusNotFound)
 }
 
 // PUT /language/{id}
@@ -57,13 +63,14 @@ func updateLanguage(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var language Language
 	err := json.Unmarshal(reqBody, &language)
-	if err != nil {
+	if err != nil { // json not valid
 		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	// check the ID from the URL matches the ID in the request
-	if id != language.Id {
-		fmt.Println("Ids do not match")
+	if id != language.Id { // ID does not match
+		fmt.Println("BAD : Ids do not match")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	for index, item := range Languages {
@@ -71,8 +78,12 @@ func updateLanguage(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("updateLanguage: " + id)
 			Languages = append(Languages[:index], Languages[index+1:]...)
 			Languages = append(Languages, language)
+			return
 		}
 	}
+	// server couldn't update
+	fmt.Println("BAD : updateLanguage: " + id)
+	w.WriteHeader(http.StatusInternalServerError)
 }
 
 // DELETE /language/{id}
@@ -84,8 +95,12 @@ func deleteLanguage(w http.ResponseWriter, r *http.Request) {
 		if language.Id == id {
 			fmt.Println("deleteLanguage: " + id)
 			Languages = append(Languages[:index], Languages[index+1:]...)
+			return
 		}
 	}
+	// couldn't find the ID
+	fmt.Println("BAD : deleteLanguage: " + id)
+	w.WriteHeader(http.StatusNotFound)
 }
 
 // GET ALL languageS
