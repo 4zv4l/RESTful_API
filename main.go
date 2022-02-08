@@ -61,6 +61,11 @@ func updateLanguage(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	// check the ID from the URL matches the ID in the request
+	if id != language.Id {
+		fmt.Println("Ids do not match")
+		return
+	}
 	for index, item := range Languages {
 		if item.Id == id {
 			fmt.Println("updateLanguage: " + id)
