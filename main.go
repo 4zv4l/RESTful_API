@@ -113,7 +113,7 @@ func handleRequests() {
 func main() {
 	// init the language array
 	Languages = []Language{
-		{Id: "1", Title: "Golang", Desc: "A nice language !", Content: "Some text about Go"},
+		{Id: "1", Title: "Go", Desc: "A nice language !", Content: "Some text about Go"},
 		{Id: "2", Title: "Rust", Desc: "a cool language", Content: "Some text about Rust"},
 	}
 	println("Listening on http://localhost:8080")
