@@ -32,6 +32,13 @@ func createNewLanguage(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	// check if the language already exists
+	for _, item := range Languages {
+		if item.Id == language.Id {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
 	log.Println("createNewLanguage: " + language.Id)
 	Languages = append(Languages, language)
 }
