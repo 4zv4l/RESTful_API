@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -28,6 +29,12 @@ func createNewLanguage(w http.ResponseWriter, r *http.Request) {
 	var language Language
 	err := json.Unmarshal(reqBody, &language)
 	if err != nil { // cannot create a new Language
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println(err)
+		return
+	}
+	// check if the ID is a number
+	if _, err := strconv.Atoi(language.Id); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Println(err)
 		return
